@@ -20,6 +20,15 @@ const defaultTheme = createTheme();
 
 export default function SignUp() {
   const history = useNavigate();
+  const getUrl = window.location.hostname
+  console.log(getUrl);
+  let websiteUrl = ""
+  if (getUrl.includes('localhost')) {
+    websiteUrl = "http://localhost:8010";
+  } else {
+    websiteUrl = 'https://testapi-peach.vercel.app';
+  }
+  
   const [loading, setLoading] = React.useState(false);
 
   const handleSubmit = async (event) => {
@@ -35,7 +44,7 @@ export default function SignUp() {
     };
 
     try {
-      const response = await fetch("http://localhost:8010/api/user", {
+      const response = await fetch(`${websiteUrl}/api/user`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
