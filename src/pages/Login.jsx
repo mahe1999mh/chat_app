@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate if you're using react-router-dom
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -17,13 +18,56 @@ import { Copyright } from "./utils/utils";
 const defaultTheme = createTheme();
 
 export default function SignIn() {
-  const handleSubmit = (event) => {
+  const navigate = useNavigate(); // Assuming you're using react-router-dom
+  const [loginData, setLoginData] = React.useState({
+    email: '',
+    password: '',
+  });
+  const [loading, setLoading] = React.useState(false);
+
+  const getUrl = window.location.hostname;
+
+  let websiteUrl = "";
+  if (getUrl.includes('localhost')) {
+    websiteUrl = "http://localhost:8010";
+  } else {
+    websiteUrl = 'https://testapi-peach.vercel.app';
+  }
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    setLoading(true);
+
+    try {
+      const response = await fetch(`${websiteUrl}/api/user/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(loginData),
+      });
+  
+      if (response.ok) {
+        alert("User logged in successfully!");
+        navigate("/chat"); // Use navigate without .push
+      } else {
+        const errorData = await response.json();
+        alert(`Login failed: ${errorData.message}`);
+      }
+    } catch (error) {
+      alert("An error occurred while logging in.");
+      console.error("Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setLoginData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
   return (
@@ -54,6 +98,8 @@ export default function SignIn() {
               name="email"
               autoComplete="email"
               autoFocus
+              value={loginData.email}
+              onChange={handleChange}
             />
             <TextField
               margin="normal"
@@ -64,6 +110,8 @@ export default function SignIn() {
               type="password"
               id="password"
               autoComplete="current-password"
+              value={loginData.password}
+              onChange={handleChange}
             />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
@@ -74,8 +122,9 @@ export default function SignIn() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              disabled={loading}
             >
-              Sign In
+              {loading ? 'Signing In...' : 'Sign In'}
             </Button>
             <Grid container>
               <Grid item xs>
