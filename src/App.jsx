@@ -1,19 +1,12 @@
-import React from 'react';
-import HomePage from './pages/Home';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import SignIn from './pages/Login';
+import React from "react";
+import { BrowserRouter } from "react-router-dom";
+import RouterIndex from "./routes";
 
 function App() {
-
   return (
     <div>
       <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<HomePage/>}/>
-        <Route path="/signup" element={<HomePage/>}/>
-        <Route path="/signin" element={<SignIn/>}/>
-        <Route path="/chat" element={<>welcome to chat app</>}/>
-      </Routes>
+       <RouterIndex/> 
       </BrowserRouter>
     </div>
   );
